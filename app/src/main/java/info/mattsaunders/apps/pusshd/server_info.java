@@ -1,12 +1,8 @@
 package info.mattsaunders.apps.pusshd;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -16,7 +12,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -195,7 +190,6 @@ public class server_info extends Activity {
                     //String ip = getLocalIpAddress();
 
                     //Server starting: set labels correctly:
-                    //serverToggle.setText("Stop Server");
                     connectionInfo.setText(username + ":" + password + "@");
                     ipaddress.setText(ip + ":" + port);
                     //Write to log:
@@ -203,11 +197,11 @@ public class server_info extends Activity {
                     //Start the server:
                 } else {
                     //Server stopping: set labels correctly:
-                    //serverToggle.setText("Start Server");
                     connectionInfo.setText("");
                     ipaddress.setText(ip);
                     //Write to log:
                     System.out.println("Server Stopping: ||||||||||||||||||||||||||||||||||||");
+                    //Stop the server:
                 }
             }
         });
@@ -232,24 +226,5 @@ public class server_info extends Activity {
             Log.e("IP Address", ex.toString());
             return "000.000.0.0";
         }
-    }
-
-    public static String getLocalIpAddress(){
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-                 en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            Log.e("IP Address", ex.toString());
-            return "000.000.0.0";
-        }
-        return null;
     }
 }
