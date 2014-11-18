@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PuSSHd</string>
+    <string name="title_section1">Server Controls</string>
+    <string name="title_section2">Server Log</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

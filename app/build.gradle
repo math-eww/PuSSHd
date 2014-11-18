@@ -1,0 +1,32 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.2"
+
+    defaultConfig {
+        applicationId "info.mattsaunders.apps.pusshd"
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-v13:21.0.0'
+    compile files('libs/bcpg-jdk15on-1.51.jar')
+    compile files('libs/bcpkix-jdk15on-1.51.jar')
+    compile files('libs/bcprov-jdk15on-1.51.jar')
+    compile files('libs/slf4j-api-1.6.4.jar')
+    compile files('libs/slf4j-jdk14-1.6.4.jar')
+    compile files('libs/sshd-core-0.13.0.jar')
+    compile files('libs/tomcat-apr-5.5.23.jar')
+}
