@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -178,6 +179,9 @@ public class server_info extends Activity {
         final EditText inputUser = (EditText) v.findViewById(R.id.user);
         final EditText inputPass = (EditText) v.findViewById(R.id.pass);
         final EditText inputPort = (EditText) v.findViewById(R.id.port);
+        inputUser.setText("test");
+        inputPass.setText("test");
+        inputPort.setText("2000");
 
         //Set button listener:
         serverToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -187,21 +191,36 @@ public class server_info extends Activity {
                     String username = inputUser.getText().toString();
                     String password = inputPass.getText().toString();
                     String port = inputPort.getText().toString();
-                    //String ip = getLocalIpAddress();
+                    String ip = getIpAddr();
 
                     //Server starting: set labels correctly:
                     connectionInfo.setText(username + ":" + password + "@");
                     ipaddress.setText(ip + ":" + port);
                     //Write to log:
-                    System.out.println("Server Starting: " + username + ":" + password + "@" + ipaddress + ":" + port);
-                    //Start the server:
+                    System.out.println("Server Starting: " + username + ":" + password + "@" + ip + ":" + port);
+
+                   //Start the server:
+                    Bundle extras = new Bundle();
+                    extras.putString("IP",ip);
+                    extras.putString("PORT",port);
+                    extras.putString("USER",username);
+                    extras.putString("PASS",password);
+                    Intent i;
+                    i = new Intent(getAppContext(), server_service.class);
+                    i.putExtras(extras);
+                    getAppContext().startService(i);
+
                 } else {
                     //Server stopping: set labels correctly:
                     connectionInfo.setText("");
                     ipaddress.setText(ip);
                     //Write to log:
                     System.out.println("Server Stopping: ||||||||||||||||||||||||||||||||||||");
+
                     //Stop the server:
+                    Intent i;
+                    i = new Intent(getAppContext(), server_service.class);
+                    getAppContext().stopService(i);
                 }
             }
         });
