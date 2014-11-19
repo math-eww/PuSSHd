@@ -47,6 +47,8 @@ public class server_info extends Activity {
         return server_info.context;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
