@@ -35,7 +35,7 @@ public class server_service extends IntentService {
         super("server_service");
     }
 
-    static final String TARGET_DIR_NAME = "mnt/sdcard";
+    static final String TARGET_DIR_NAME = "mnt/sdcard/Download";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -63,7 +63,6 @@ public class server_service extends IntentService {
         }
         */
 
-
         //Log it:
         System.out.println("INITIALIZING: SSH SFTP: " + username_string +":"+ password_string + "@" + ip_string +":"+ port);
 
@@ -81,7 +80,6 @@ public class server_service extends IntentService {
         sshd.setPasswordAuthenticator(passwordAuth);
         sshd.setPublickeyAuthenticator(publicKeyAuth);
         sshd.setSubsystemFactories(Arrays.<NamedFactory<Command>>asList(new SftpSubsystem.Factory()));
-        //sshd.setFileSystemFactory(new NativeFileSystemFactory());
         sshd.setFileSystemFactory(getModifiedNativeFileSystemFactory());
 
         try {
@@ -97,11 +95,7 @@ public class server_service extends IntentService {
 
     }
 
-    /**
-     * Override to provide a NativeFileSystemView with a modified root-dir.
-     *
-     * @return a modified NativeFileSystemFactory
-     */
+    //Custom FileSystemFactory to change initial root directory on SFTP connection
     NativeFileSystemFactory getModifiedNativeFileSystemFactory() {
         return new NativeFileSystemFactory() {
 
@@ -110,33 +104,24 @@ public class server_service extends IntentService {
                 String userName = getUsername(session);
                 NativeFileSystemView nfsv = new ModifiedNativeFileSystemView(
                         userName, isCaseInsensitive());
-                Log.d("creating a modified NativeFileSystemView: {}",nfsv.getClass().toString());
+                Log.d("Creating a modified NativeFileSystemView for user", nfsv.getUserName());
                 return nfsv;
             }
 
         };
     }
-
-    /**
-     * Hook to override for testing without a valid session.
-     */
+    //Hook for testing without valid session
     String getUsername(Session session) {
         return session.getUsername();
     }
-
-    /**
-     * Override to provide a NativeFileSystemView with a modified root-dir.
-     */
+    //Class to return the altered FileSystemView with changed initial directory
     class ModifiedNativeFileSystemView extends NativeFileSystemView {
         String modifiedRootDir;
 
-        public ModifiedNativeFileSystemView(String userName,
-                                            boolean caseInsensitive) {
+        public ModifiedNativeFileSystemView(String userName,boolean caseInsensitive) {
             super(userName, caseInsensitive);
-
-            modifiedRootDir = System.getProperty("user.dir") + File.separator
-                    + TARGET_DIR_NAME;
-            Log.d("Modified NativeFileSystemView created with root dir: {}", modifiedRootDir);
+            modifiedRootDir = System.getProperty("user.dir") + File.separator + TARGET_DIR_NAME;
+            Log.d("Modified NativeFileSystemView created with root directory", modifiedRootDir);
         }
 
         @Override
