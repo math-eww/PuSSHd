@@ -173,6 +173,8 @@ public class server_info extends Activity {
 
     public static void setupServerLog (View v) {
         //TODO: get log info from SSH object to display in this fragment screen
+        final TextView status = (TextView) v.findViewById(R.id.status);
+        status.setText("Server Stopped");
         System.out.println("setupServerLog executed");
 
     }
@@ -277,13 +279,7 @@ public class server_info extends Activity {
             WifiManager wifiManager = (WifiManager) c.getSystemService(WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             int ip = wifiInfo.getIpAddress();
-
-            return String.format(
-                    "%d.%d.%d.%d",
-                    (ip & 0xff),
-                    (ip >> 8 & 0xff),
-                    (ip >> 16 & 0xff),
-                    (ip >> 24 & 0xff));
+            return String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff));
         } catch (Exception ex) {
             Log.e("IP Address", ex.toString());
             return "000.000.0.0";
@@ -335,7 +331,7 @@ public class server_info extends Activity {
             FileOutputStream fos = new FileOutputStream(file);
             try {
                 fos.write(data.toString().getBytes());
-                Log.i("Successfully wrote JSON to file", data.toString());
+                //Log.i("Successfully wrote JSON to file", data.toString());
             } catch (Exception ex) {
                 Log.e("Failed to save data", data.toString());
                 ex.printStackTrace();
@@ -361,7 +357,7 @@ public class server_info extends Activity {
                 StringBuilder buf = new StringBuilder();
                 try {
                     while ((str = reader.readLine()) != null) {
-                        buf.append(str + "\n");
+                        buf.append(str);
                     }
                     fis.close();
                     json = buf.toString();
