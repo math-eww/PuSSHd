@@ -164,6 +164,7 @@ public class server_info extends Activity {
     }
 
     public static void setupServerLog (View v) {
+        //TODO: get log info from SSH object to display in this fragment screen
         System.out.println("setupServerLog executed");
 
     }

@@ -8,12 +8,18 @@ import android.widget.Toast;
 
 import org.apache.sshd.SshServer;
 import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.Session;
+import org.apache.sshd.common.file.FileSystemView;
+import org.apache.sshd.common.file.SshFile;
+import org.apache.sshd.common.file.nativefs.NativeFileSystemFactory;
+import org.apache.sshd.common.file.nativefs.NativeFileSystemView;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.sftp.SftpSubsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Arrays;
 
 import info.mattsaunders.apps.pusshd.sshd.PseudoTerminalFactory;
@@ -29,7 +35,7 @@ public class server_service extends IntentService {
         super("server_service");
     }
 
-
+    static final String TARGET_DIR_NAME = "mnt/sdcard";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -75,6 +81,8 @@ public class server_service extends IntentService {
         sshd.setPasswordAuthenticator(passwordAuth);
         sshd.setPublickeyAuthenticator(publicKeyAuth);
         sshd.setSubsystemFactories(Arrays.<NamedFactory<Command>>asList(new SftpSubsystem.Factory()));
+        //sshd.setFileSystemFactory(new NativeFileSystemFactory());
+        sshd.setFileSystemFactory(getModifiedNativeFileSystemFactory());
 
         try {
             sshd.start();
@@ -88,4 +96,53 @@ public class server_service extends IntentService {
 
 
     }
+
+    /**
+     * Override to provide a NativeFileSystemView with a modified root-dir.
+     *
+     * @return a modified NativeFileSystemFactory
+     */
+    NativeFileSystemFactory getModifiedNativeFileSystemFactory() {
+        return new NativeFileSystemFactory() {
+
+            @Override
+            public FileSystemView createFileSystemView(Session session) {
+                String userName = getUsername(session);
+                NativeFileSystemView nfsv = new ModifiedNativeFileSystemView(
+                        userName, isCaseInsensitive());
+                Log.d("creating a modified NativeFileSystemView: {}",nfsv.getClass().toString());
+                return nfsv;
+            }
+
+        };
+    }
+
+    /**
+     * Hook to override for testing without a valid session.
+     */
+    String getUsername(Session session) {
+        return session.getUsername();
+    }
+
+    /**
+     * Override to provide a NativeFileSystemView with a modified root-dir.
+     */
+    class ModifiedNativeFileSystemView extends NativeFileSystemView {
+        String modifiedRootDir;
+
+        public ModifiedNativeFileSystemView(String userName,
+                                            boolean caseInsensitive) {
+            super(userName, caseInsensitive);
+
+            modifiedRootDir = System.getProperty("user.dir") + File.separator
+                    + TARGET_DIR_NAME;
+            Log.d("Modified NativeFileSystemView created with root dir: {}", modifiedRootDir);
+        }
+
+        @Override
+        public SshFile getFile(String file) {
+            return getFile(modifiedRootDir, file);
+        }
+    }
+
 }
