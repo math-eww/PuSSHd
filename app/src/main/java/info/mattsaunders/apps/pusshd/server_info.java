@@ -21,7 +21,11 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import org.apache.sshd.SshServer;
+import org.slf4j.Logger;
 
 
 public class server_info extends Activity {
@@ -42,6 +46,10 @@ public class server_info extends Activity {
     ViewPager mViewPager;
 
     private static Context context;
+
+    public static SshServer sshd;
+
+    public static Logger log;
 
     public static Context getAppContext(){
         return server_info.context;
@@ -150,8 +158,14 @@ public class server_info extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_server_log, container, false);
+            setupServerLog(rootView);
             return rootView;
         }
+    }
+
+    public static void setupServerLog (View v) {
+        System.out.println("setupServerLog executed");
+
     }
 
     public static void setupServerToggle(View v) {
@@ -211,18 +225,24 @@ public class server_info extends Activity {
                     i = new Intent(getAppContext(), server_service.class);
                     i.putExtras(extras);
                     getAppContext().startService(i);
-
                 } else {
                     //Server stopping: set labels correctly:
                     connectionInfo.setText("");
                     ipaddress.setText(ip);
                     //Write to log:
-                    System.out.println("Server Stopping: ||||||||||||||||||||||||||||||||||||");
+                    System.out.println("Server Stopping...");
 
                     //Stop the server:
                     Intent i;
                     i = new Intent(getAppContext(), server_service.class);
                     getAppContext().stopService(i);
+                    try {
+                        sshd.stop();
+                        Log.i("SUCCESS: Server stopped",sshd.toString());
+                        Toast.makeText(getAppContext(), "SSH Service Stopped", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.e("FAILURE: Server failed to stop. Is it running?", e.toString());
+                    }
                 }
             }
         });
