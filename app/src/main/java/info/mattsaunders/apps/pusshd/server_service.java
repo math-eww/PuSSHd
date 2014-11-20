@@ -19,7 +19,11 @@ import org.apache.sshd.server.sftp.SftpSubsystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.BindException;
 import java.util.Arrays;
 
 import info.mattsaunders.apps.pusshd.sshd.PseudoTerminalFactory;
@@ -35,7 +39,7 @@ public class server_service extends IntentService {
         super("server_service");
     }
 
-    static final String TARGET_DIR_NAME = "mnt/sdcard/Download";
+    static final String TARGET_DIR_NAME = "mnt/sdcard";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -84,9 +88,28 @@ public class server_service extends IntentService {
 
         try {
             sshd.start();
-            Log.i("SUCCESS: Server listening on port",Integer.toString(port));
+            Log.i("SUCCESS: Server listening on port", Integer.toString(port));
             server_info.sshd = sshd;
             server_info.log = log;
+            //TODO: get PID of SSHD that is started, and save it (maybe to file? or in onSaveInstanceState(Bundle savedInstanceState) bundle)
+        }catch (BindException bex) {
+            Log.e("FAILURE: Port already in use", bex.toString());
+            bex.printStackTrace();
+            try {
+                Process p = Runtime.getRuntime().exec("su");
+                DataOutputStream outs = new DataOutputStream(p.getOutputStream());
+                String cmd ="fuser -v "+port_string+" tcp";
+                outs.writeBytes(cmd +"\n");
+                String outputStr = "";
+                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                while (reader.ready()) {
+                    outputStr += reader.readLine();
+                }
+                //TODO: check if PID of process blocking port is same as SSHD, and if so kill it and try to start SSHD again
+                Log.i("Checking what process is on current port", outputStr);
+            } catch (Exception ex) {
+                Log.e("Failed to get process on current port", ex.toString());
+            }
         } catch (Exception ex) {
             Log.e("FAILURE: Server start failed", ex.toString());
             ex.printStackTrace();

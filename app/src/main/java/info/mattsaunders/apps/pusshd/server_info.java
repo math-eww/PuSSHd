@@ -1,5 +1,12 @@
 package info.mattsaunders.apps.pusshd;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -9,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -25,6 +33,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.apache.sshd.SshServer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 
@@ -46,16 +56,14 @@ public class server_info extends Activity {
     ViewPager mViewPager;
 
     private static Context context;
+    private static final String FILENAME = "PuSSHd_settings";
 
     public static SshServer sshd;
-
     public static Logger log;
 
     public static Context getAppContext(){
         return server_info.context;
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,9 +204,18 @@ public class server_info extends Activity {
         final EditText inputUser = (EditText) v.findViewById(R.id.user);
         final EditText inputPass = (EditText) v.findViewById(R.id.pass);
         final EditText inputPort = (EditText) v.findViewById(R.id.port);
-        inputUser.setText("test");
-        inputPass.setText("test");
-        inputPort.setText("2000");
+        //Load saved user data if available, default if not
+        JSONObject obj = readJsonFile();
+        if (obj != null) {
+            Bundle userdata = JsonObjectToBundle(obj);
+            inputUser.setText(userdata.getString("USER"));
+            inputPass.setText(userdata.getString("PASS"));
+            inputPort.setText(userdata.getString("PORT"));
+        } else {
+            inputUser.setText("test");
+            inputPass.setText("test");
+            inputPort.setText("2000");
+        }
 
         //Set button listener:
         serverToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -226,6 +243,11 @@ public class server_info extends Activity {
                     i = new Intent(getAppContext(), server_service.class);
                     i.putExtras(extras);
                     getAppContext().startService(i);
+
+                    //Save JSON object with user info
+                    JSONObject json  = bundleToJsonObject(extras); //Convert bundle to JSON
+                    if (json != null) { writeJsonFile(json); } //Write JSON to file
+
                 } else {
                     //Server stopping: set labels correctly:
                     connectionInfo.setText("");
@@ -256,17 +278,103 @@ public class server_info extends Activity {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             int ip = wifiInfo.getIpAddress();
 
-            String ipString = String.format(
+            return String.format(
                     "%d.%d.%d.%d",
                     (ip & 0xff),
                     (ip >> 8 & 0xff),
                     (ip >> 16 & 0xff),
                     (ip >> 24 & 0xff));
-
-            return ipString;
         } catch (Exception ex) {
             Log.e("IP Address", ex.toString());
             return "000.000.0.0";
         }
+    }
+
+    public static JSONObject bundleToJsonObject(Bundle bundle) {
+        try {
+            JSONObject output = new JSONObject();
+            for( String key : bundle.keySet() ){
+                Object object = bundle.get(key);
+                if(object instanceof Integer || object instanceof String)
+                    output.put(key, object);
+                else
+                    throw new RuntimeException("only Integer and String can be extracted");
+            }
+            return output;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Bundle JsonObjectToBundle(JSONObject jsonObject) {
+        try {
+            Bundle bundle = new Bundle();
+            Iterator<?> keys = jsonObject.keys();
+            while( keys.hasNext() ){
+                String key = (String)keys.next();
+                Object object = jsonObject.get(key);
+                if(object instanceof String)
+                    bundle.putString(key, (String) object);
+                else if(object instanceof Integer)
+                    bundle.putInt(key, (Integer) object);
+                else
+                    throw new RuntimeException("only Integer and String can be re-extracted");
+            }
+            return bundle;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeJsonFile(JSONObject data) {
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdcard.getAbsolutePath() + "/PuSSHd/");
+            dir.mkdir();
+            File file = new File(dir, FILENAME);
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                fos.write(data.toString().getBytes());
+                Log.i("Successfully wrote JSON to file", data.toString());
+            } catch (Exception ex) {
+                Log.e("Failed to save data", data.toString());
+                ex.printStackTrace();
+            }
+            fos.close();
+        } catch (Exception ex) {
+            Log.e("Failed to open file", FILENAME);
+            ex.printStackTrace();
+        }
+    }
+
+    public static JSONObject readJsonFile() {
+        String json;
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdcard.getAbsolutePath() + "/PuSSHd/");
+            File file = new File(dir, FILENAME);
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                InputStreamReader fileRead = new InputStreamReader(fis);
+                BufferedReader reader = new BufferedReader(fileRead);
+                String str;
+                StringBuilder buf = new StringBuilder();
+                try {
+                    while ((str = reader.readLine()) != null) {
+                        buf.append(str + "\n");
+                    }
+                    fis.close();
+                    json = buf.toString();
+                    return new JSONObject(json);
+                } catch (Exception ex) {
+                    Log.e("Failed to read file", ex.toString());
+                }
+            } catch (FileNotFoundException ex) {
+                Log.e("Failed to load file: file not found", file.toString());
+            }
+        } catch (Exception ex) {
+            Log.e("Failed to find directory", ex.toString());
+        }
+        return null;
     }
 }

@@ -65,8 +65,6 @@ public class PseudoTerminalFactory implements Factory<Command> {
 
 		@Override
 		public boolean isAlive() {
-			// TODO: Call native kill() to determine if the child
-			// process is alive
 			return true;
 		}
 
