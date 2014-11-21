@@ -98,13 +98,15 @@ public class server_service extends IntentService {
             try {
                 Process p = Runtime.getRuntime().exec("su");
                 DataOutputStream outs = new DataOutputStream(p.getOutputStream());
-                String cmd ="fuser -v "+port_string+" tcp";
+                String cmd = "busybox netstat -lp | grep " + port_string;
+                //String cmd ="fuser -v "+port_string+" tcp "; //this is not functional
                 outs.writeBytes(cmd +"\n");
                 String outputStr = "";
                 BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 while (reader.ready()) {
                     outputStr += reader.readLine();
                 }
+                //TODO: get actual output from process to be displayed - right now it does not return actual terminal output
                 //TODO: check if PID of process blocking port is same as SSHD, and if so kill it and try to start SSHD again
                 Log.i("Checking what process is on current port", outputStr);
             } catch (Exception ex) {

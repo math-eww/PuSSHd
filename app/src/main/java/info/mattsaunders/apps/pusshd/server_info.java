@@ -179,15 +179,14 @@ public class server_info extends Activity {
     }
 
     public static void setupServerLog (View v) {
-        //TODO: get log info from SSH object to display in this fragment screen
+        //TODO: get more info from SSH object to display in this fragment screen
         final TextView status = (TextView) v.findViewById(R.id.status);
         status.setText("Server Stopped");
         final TextView version = (TextView) v.findViewById(R.id.version);
         version.setText("");
-        System.out.println("setupServerLog executed");
-        final ListView list = (ListView) v.findViewById(R.id.userlist);
         final TextView activeSessionLabel = (TextView) v.findViewById(R.id.activeSessions);
         activeSessionLabel.setText("");
+        final ListView list = (ListView) v.findViewById(R.id.userlist);
 
         mUpdater = new Runnable() {
             @Override
