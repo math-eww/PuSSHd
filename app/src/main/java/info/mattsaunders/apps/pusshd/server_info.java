@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -17,6 +19,7 @@ import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -28,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -60,6 +64,9 @@ public class server_info extends Activity {
 
     public static SshServer sshd;
     public static Logger log;
+    public static boolean mRunning = false;
+    public static Handler mHandler = new Handler();
+    public static Runnable mUpdater;
 
     public static Context getAppContext(){
         return server_info.context;
@@ -175,7 +182,33 @@ public class server_info extends Activity {
         //TODO: get log info from SSH object to display in this fragment screen
         final TextView status = (TextView) v.findViewById(R.id.status);
         status.setText("Server Stopped");
+        final TextView version = (TextView) v.findViewById(R.id.version);
+        version.setText("");
         System.out.println("setupServerLog executed");
+        final ListView list = (ListView) v.findViewById(R.id.userlist);
+        final TextView activeSessionLabel = (TextView) v.findViewById(R.id.activeSessions);
+        activeSessionLabel.setText("");
+
+        mUpdater = new Runnable() {
+            @Override
+            public void run() {
+                if (!mRunning) {
+                    status.setText("Server Stopped");
+                    version.setText("");
+                    activeSessionLabel.setText("");
+                    return;
+                }
+                status.setText("Server Running");
+                if (sshd != null) {
+                    version.setText(sshd.getVersion());
+                    activeSessionLabel.setText("Active Sessions:");
+                    ArrayList<Object> userList = new ArrayList<>(Arrays.asList(sshd.getActiveSessions().toArray()));
+                    SessionListAdapter itemAdapter = new SessionListAdapter(getAppContext(), userList);
+                    list.setAdapter(itemAdapter);
+                }
+                mHandler.postDelayed(this, 500); // set time here to refresh views
+            }
+        };
 
     }
 
@@ -246,9 +279,13 @@ public class server_info extends Activity {
                     i.putExtras(extras);
                     getAppContext().startService(i);
 
-                    //Save JSON object with user info
+                    //Save JSON object with user info:
                     JSONObject json  = bundleToJsonObject(extras); //Convert bundle to JSON
                     if (json != null) { writeJsonFile(json); } //Write JSON to file
+
+                    //Begin updating log view:
+                    mRunning = true;
+                    mHandler.post(mUpdater);
 
                 } else {
                     //Server stopping: set labels correctly:
@@ -268,6 +305,10 @@ public class server_info extends Activity {
                     } catch (Exception e) {
                         Log.e("FAILURE: Server failed to stop. Is it running?", e.toString());
                     }
+
+                    mRunning = false;
+                    sshd = null;
+                    log = null;
                 }
             }
         });

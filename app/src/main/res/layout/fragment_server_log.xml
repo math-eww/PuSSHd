@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/linlay">
 
     <TextView
         android:layout_width="wrap_content"
@@ -9,5 +10,30 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Server Log"
         android:id="@+id/status"
-        android:singleLine="false" />
+        android:singleLine="false"
+        android:layout_marginLeft="3dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/version"
+        android:layout_marginLeft="3dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/activeSessions"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="5dp" />
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="false"
+        android:id="@+id/userlist"
+        android:layout_marginTop="10dp" />
 </LinearLayout>
