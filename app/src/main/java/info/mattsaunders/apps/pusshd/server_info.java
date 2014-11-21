@@ -181,6 +181,7 @@ public class server_info extends Activity {
 
     public static void setupServerLog (View v) {
         //TODO: get more info from SSH object to display in this fragment screen
+        //TODO: solve info failing to refresh after orientation change (displays server stopped even if server is still on) - runnable stops running
         final TextView status = (TextView) v.findViewById(R.id.status);
         status.setText("Server Stopped");
         final TextView version = (TextView) v.findViewById(R.id.version);
@@ -255,60 +256,64 @@ public class server_info extends Activity {
         //Set button listener:
         serverToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    //Get user's input:
-                    String username = inputUser.getText().toString();
-                    String password = inputPass.getText().toString();
-                    String port = inputPort.getText().toString();
-                    String ip = getIpAddr();
+                if (buttonView.isPressed()) {
+                    if (isChecked) {
+                        //Get user's input:
+                        String username = inputUser.getText().toString();
+                        String password = inputPass.getText().toString();
+                        String port = inputPort.getText().toString();
+                        String ip = getIpAddr();
 
-                    //Server starting: set labels correctly:
-                    connectionInfo.setText(username + ":" + password + "@");
-                    ipaddress.setText(ip + ":" + port);
-                    //Write to log:
-                    System.out.println("Server Starting: " + username + ":" + password + "@" + ip + ":" + port);
+                        //Server starting: set labels correctly:
+                        connectionInfo.setText(username + ":" + password + "@");
+                        ipaddress.setText(ip + ":" + port);
+                        //Write to log:
+                        System.out.println("Server Starting: " + username + ":" + password + "@" + ip + ":" + port);
 
-                   //Start the server:
-                    Bundle extras = new Bundle();
-                    extras.putString("IP",ip);
-                    extras.putString("PORT",port);
-                    extras.putString("USER",username);
-                    extras.putString("PASS",password);
-                    Intent i;
-                    i = new Intent(getAppContext(), server_service.class);
-                    i.putExtras(extras);
-                    getAppContext().startService(i);
+                        //Start the server:
+                        Bundle extras = new Bundle();
+                        extras.putString("IP", ip);
+                        extras.putString("PORT", port);
+                        extras.putString("USER", username);
+                        extras.putString("PASS", password);
+                        Intent i;
+                        i = new Intent(getAppContext(), server_service.class);
+                        i.putExtras(extras);
+                        getAppContext().startService(i);
 
-                    //Save JSON object with user info:
-                    JSONObject json  = bundleToJsonObject(extras); //Convert bundle to JSON
-                    if (json != null) { writeJsonFile(json); } //Write JSON to file
+                        //Save JSON object with user info:
+                        JSONObject json = bundleToJsonObject(extras); //Convert bundle to JSON
+                        if (json != null) {
+                            writeJsonFile(json);
+                        } //Write JSON to file
 
-                    //Begin updating log view:
-                    mRunning = true;
-                    mHandler.post(mUpdater);
+                        //Begin updating log view:
+                        mRunning = true;
+                        mHandler.post(mUpdater);
 
-                } else {
-                    //Server stopping: set labels correctly:
-                    connectionInfo.setText("");
-                    ipaddress.setText(ip);
-                    //Write to log:
-                    System.out.println("Server Stopping...");
+                    } else {
+                        //Server stopping: set labels correctly:
+                        connectionInfo.setText("");
+                        ipaddress.setText(ip);
+                        //Write to log:
+                        System.out.println("Server Stopping...");
 
-                    //Stop the server:
-                    Intent i;
-                    i = new Intent(getAppContext(), server_service.class);
-                    getAppContext().stopService(i);
-                    try {
-                        sshd.stop();
-                        Log.i("SUCCESS: Server stopped",sshd.toString());
-                        Toast.makeText(getAppContext(), "SSH Service Stopped", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.e("FAILURE: Server failed to stop. Is it running?", e.toString());
+                        //Stop the server:
+                        Intent i;
+                        i = new Intent(getAppContext(), server_service.class);
+                        getAppContext().stopService(i);
+                        try {
+                            sshd.stop();
+                            Log.i("SUCCESS: Server stopped", sshd.toString());
+                            Toast.makeText(getAppContext(), "SSH Service Stopped", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Log.e("FAILURE: Server failed to stop. Is it running?", e.toString());
+                        }
+
+                        mRunning = false;
+                        sshd = null;
+                        log = null;
                     }
-
-                    mRunning = false;
-                    sshd = null;
-                    log = null;
                 }
             }
         });
