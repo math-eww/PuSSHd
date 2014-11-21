@@ -69,6 +69,7 @@ public class server_info extends Activity {
     public static Handler mHandler = new Handler();
     public static Runnable mUpdater;
     public static boolean statusOnOff;
+    public static boolean suEnabled = false;
 
     public static Context getAppContext(){
         return server_info.context;
@@ -82,7 +83,7 @@ public class server_info extends Activity {
         //Init context variable
         server_info.context = getApplicationContext();
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
@@ -109,6 +110,13 @@ public class server_info extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            System.out.println("Settings selected");
+            startActivity(new Intent(this, Settings.class));
+            return true;
+        }
+
+        if (id == R.id.action_colours) {
+            System.out.println("Theme selected");
             return true;
         }
 
@@ -243,9 +251,9 @@ public class server_info extends Activity {
         connectionInfo.setText("");
 
         //Store fields for user input:
-        final EditText inputUser = (EditText) v.findViewById(R.id.user);
-        final EditText inputPass = (EditText) v.findViewById(R.id.pass);
-        final EditText inputPort = (EditText) v.findViewById(R.id.port);
+        final EditText inputUser = (EditText) v.findViewById(R.id.userenter);
+        final EditText inputPass = (EditText) v.findViewById(R.id.passenter);
+        final EditText inputPort = (EditText) v.findViewById(R.id.portenter);
         //Load saved user data if available, default if not
         JSONObject obj = readJsonFile();
         if (obj != null) {
@@ -396,7 +404,6 @@ public class server_info extends Activity {
             FileOutputStream fos = new FileOutputStream(file);
             try {
                 fos.write(data.toString().getBytes());
-                //Log.i("Successfully wrote JSON to file", data.toString());
             } catch (Exception ex) {
                 Log.e("Failed to save data", data.toString());
                 ex.printStackTrace();

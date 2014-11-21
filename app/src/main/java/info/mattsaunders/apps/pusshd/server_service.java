@@ -96,15 +96,17 @@ public class server_service extends IntentService {
             Log.i("SUCCESS: Server listening on port", Integer.toString(port));
             server_info.sshd = sshd;
             server_info.log = log;
-            try {
-                //TODO: Stress test this way of scraping PID - what if the first line is not what is expected?
-                List<String> cmdOut = ExecuteRootCommand.ExecCommand("busybox netstat -lp | grep " + port_string);
-                int pid = Integer.parseInt(cmdOut.get(0).split("LISTEN|/")[1].trim());
-                server_info.sshdPid = pid;
-                Log.i("SSHD PID", Integer.toString(pid));
-                writePidFile(pid);
-            } catch (Exception ex) {
-                Log.e("Failed to get SSHD PID", ex.toString());
+            if (server_info.suEnabled) {
+                try {
+                    //TODO: Stress test this way of scraping PID - what if the first line is not what is expected?
+                    List<String> cmdOut = ExecuteRootCommand.ExecCommand("busybox netstat -lp | grep " + port_string);
+                    int pid = Integer.parseInt(cmdOut.get(0).split("LISTEN|/")[1].trim());
+                    server_info.sshdPid = pid;
+                    Log.i("SSHD PID", Integer.toString(pid));
+                    writePidFile(pid);
+                } catch (Exception ex) {
+                    Log.e("Failed to get SSHD PID", ex.toString());
+                }
             }
         }catch (BindException bex) {
             Log.e("FAILURE: Port already in use", bex.toString());
@@ -113,22 +115,23 @@ public class server_service extends IntentService {
             //TODO: So we need to figure out a different way to handle when the port is blocked - maybe just relaunching the application? Is there a method to unbind?
             //TODO: Maybe reconsider attempting to store reference to sshd object so we can stop it with it's stop method, even after application reload?
             //Here we check the PID of the process blocking the port against the stored PID from the last launch of SSHD
-            Log.i("Attempting to check if old SSHD PID matched PID blocking port", port_string);
-            try {
-                List<String> cmdOut = ExecuteRootCommand.ExecCommand("busybox netstat -lp | grep " + port_string);
-                int pid = Integer.parseInt(cmdOut.get(0).split("LISTEN|/")[1].trim());
-                server_info.sshdPid = pid;
-                Log.i("Blocking PID = ", Integer.toString(pid));
-                int oldPid = readPidFile();
-                Log.i("Old PID = ", Integer.toString(oldPid));
-                if (pid == oldPid) {
-                    ExecuteRootCommand.ExecCommand("kill -9 " + pid);
-                    sshd.start();
+            if (server_info.suEnabled) {
+                Log.i("Attempting to check if old SSHD PID matched PID blocking port", port_string);
+                try {
+                    List<String> cmdOut = ExecuteRootCommand.ExecCommand("busybox netstat -lp | grep " + port_string);
+                    int pid = Integer.parseInt(cmdOut.get(0).split("LISTEN|/")[1].trim());
+                    server_info.sshdPid = pid;
+                    Log.i("Blocking PID = ", Integer.toString(pid));
+                    int oldPid = readPidFile();
+                    Log.i("Old PID = ", Integer.toString(oldPid));
+                    if (pid == oldPid) {
+                        ExecuteRootCommand.ExecCommand("kill -9 " + pid);
+                        sshd.start();
+                    }
+                } catch (Exception ex) {
+                    Log.e("Failed to get Blocking PID", ex.toString());
                 }
-            } catch (Exception ex) {
-                Log.e("Failed to get Blocking PID", ex.toString());
             }
-
         } catch (Exception ex) {
             Log.e("FAILURE: Server start failed", ex.toString());
             ex.printStackTrace();

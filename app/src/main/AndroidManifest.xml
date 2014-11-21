@@ -26,6 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Settings" android:label="PuSSHd Settings" >
+
+        </activity>
     </application>
 
 </manifest>

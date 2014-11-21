@@ -37,7 +37,7 @@
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/user"
+                android:id="@+id/userenter"
                 android:layout_weight="0.5" />
         </LinearLayout>
 
@@ -57,7 +57,7 @@
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/pass"
+                android:id="@+id/passenter"
                 android:layout_weight="0.5"
                 android:inputType="textPassword" />
         </LinearLayout>
@@ -78,7 +78,7 @@
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/port"
+                android:id="@+id/portenter"
                 android:layout_weight="0.5"
                 android:inputType="number" />
         </LinearLayout>
@@ -102,6 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/textColorSecondary"
             android:text="Large Text"
             android:id="@+id/ipaddress"
             android:layout_gravity="center_horizontal" />
