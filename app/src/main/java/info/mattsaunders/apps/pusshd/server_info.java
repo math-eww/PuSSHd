@@ -63,6 +63,7 @@ public class server_info extends Activity {
     private static final String FILENAME = "PuSSHd_settings";
 
     public static SshServer sshd;
+    public static int sshdPid;
     public static Logger log;
     public static boolean mRunning = false;
     public static Handler mHandler = new Handler();
