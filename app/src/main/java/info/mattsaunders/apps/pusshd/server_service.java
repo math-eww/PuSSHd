@@ -63,14 +63,6 @@ public class server_service extends IntentService {
 
         //Process data
         int port = Integer.parseInt(port_string);
-        /*
-        try {
-            InetAddress ip = InetAddress.getByName(ip_string);
-        } catch (Exception ex) {
-            Log.e("IP Address", ex.toString());
-            InetAddress ip = null;
-        }
-        */
 
         //Log it:
         System.out.println("INITIALIZING: SSH SFTP: " + username_string +":"+ password_string + "@" + ip_string +":"+ port);
@@ -111,10 +103,12 @@ public class server_service extends IntentService {
         }catch (BindException bex) {
             Log.e("FAILURE: Port already in use", bex.toString());
             bex.printStackTrace();
-            //TODO: This works to check PID against old pid, but is PID of app not just SSHD process (even thought it launches a new service?)
-            //TODO: So we need to figure out a different way to handle when the port is blocked - maybe just relaunching the application? Is there a method to unbind?
-            //TODO: Maybe reconsider attempting to store reference to sshd object so we can stop it with it's stop method, even after application reload?
-            //Here we check the PID of the process blocking the port against the stored PID from the last launch of SSHD
+            /**
+             * TODO: This works to check PID against old pid, but is PID of app not just SSHD process (even thought it launches a new service?)
+             *       So we need to figure out a different way to handle when the port is blocked - maybe just relaunching the application? Is there a method to unbind?
+             *       Maybe reconsider attempting to store reference to sshd object so we can stop it with it's stop method, even after application reload?
+            **/
+            //Check the PID of the process blocking the port against the stored PID from the last launch of SSHD
             if (server_info.suEnabled) {
                 Log.i("Attempting to check if old SSHD PID matched PID blocking port", port_string);
                 try {
