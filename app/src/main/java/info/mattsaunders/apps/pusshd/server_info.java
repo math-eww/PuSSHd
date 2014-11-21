@@ -61,6 +61,7 @@ public class server_info extends Activity {
 
     private static Context context;
     private static final String FILENAME = "PuSSHd_settings";
+    private static final String FILENAME_SETTINGS = "settings";
 
     public static SshServer sshd;
     public static int sshdPid;
@@ -69,7 +70,7 @@ public class server_info extends Activity {
     public static Handler mHandler = new Handler();
     public static Runnable mUpdater;
     public static boolean statusOnOff;
-    public static boolean suEnabled = false;
+    public static boolean suEnabled = Boolean.valueOf(readSettingsFile());
 
     public static Context getAppContext(){
         return server_info.context;
@@ -267,6 +268,8 @@ public class server_info extends Activity {
             inputPort.setText("2000");
         }
 
+        System.out.println("SU enabled: " + suEnabled);
+
         //Set button listener:
         serverToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -444,5 +447,36 @@ public class server_info extends Activity {
             Log.e("Failed to find directory", ex.toString());
         }
         return null;
+    }
+
+    public static String readSettingsFile() {
+        String data;
+        try {
+            File sdcard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdcard.getAbsolutePath() + "/PuSSHd/");
+            File file = new File(dir, FILENAME_SETTINGS);
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                InputStreamReader fileRead = new InputStreamReader(fis);
+                BufferedReader reader = new BufferedReader(fileRead);
+                String str;
+                StringBuilder buf = new StringBuilder();
+                try {
+                    while ((str = reader.readLine()) != null) {
+                        buf.append(str);
+                    }
+                    fis.close();
+                    data = buf.toString();
+                    return data;
+                } catch (Exception ex) {
+                    Log.e("Failed to read file", ex.toString());
+                }
+            } catch (FileNotFoundException ex) {
+                Log.e("Failed to load file: file not found", file.toString());
+            }
+        } catch (Exception ex) {
+            Log.e("Failed to find directory", ex.toString());
+        }
+        return "";
     }
 }
