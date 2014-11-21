@@ -68,6 +68,7 @@ public class server_info extends Activity {
     public static boolean mRunning = false;
     public static Handler mHandler = new Handler();
     public static Runnable mUpdater;
+    public static boolean statusOnOff;
 
     public static Context getAppContext(){
         return server_info.context;
@@ -181,7 +182,6 @@ public class server_info extends Activity {
 
     public static void setupServerLog (View v) {
         //TODO: get more info from SSH object to display in this fragment screen
-        //TODO: solve info failing to refresh after orientation change (displays server stopped even if server is still on) - runnable stops running
         final TextView status = (TextView) v.findViewById(R.id.status);
         status.setText("Server Stopped");
         final TextView version = (TextView) v.findViewById(R.id.version);
@@ -210,6 +210,12 @@ public class server_info extends Activity {
                 mHandler.postDelayed(this, 500); // set time here to refresh views
             }
         };
+
+        //Get server's status on orientation change and set up accordingly:
+        if (statusOnOff) {
+            mRunning = true;
+            mHandler.post(mUpdater);
+        }
 
     }
 
@@ -291,6 +297,9 @@ public class server_info extends Activity {
                         mRunning = true;
                         mHandler.post(mUpdater);
 
+                        //Save server state to variable
+                        statusOnOff = true;
+
                     } else {
                         //Server stopping: set labels correctly:
                         connectionInfo.setText("");
@@ -313,10 +322,20 @@ public class server_info extends Activity {
                         mRunning = false;
                         sshd = null;
                         log = null;
+
+                        //Save server state to variable
+                        statusOnOff = false;
                     }
                 }
             }
         });
+        if (statusOnOff) {
+            String username = inputUser.getText().toString();
+            String password = inputPass.getText().toString();
+            String port = inputPort.getText().toString();
+            connectionInfo.setText(username + ":" + password + "@");
+            ipaddress.setText(ip + ":" + port);
+        }
     }
 
     public static String getIpAddr() {
