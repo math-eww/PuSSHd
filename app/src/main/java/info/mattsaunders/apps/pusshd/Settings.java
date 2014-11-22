@@ -20,6 +20,12 @@ public class Settings extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (server_info.setTheme) {
+            this.setTheme(R.style.AppThemeDark);
+        } else {
+            this.setTheme(R.style.AppThemeLight);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
@@ -29,6 +35,13 @@ public class Settings extends Activity {
         suLabel.setText("Use Root");
         suSwitch.setChecked(server_info.suEnabled);
 
+        Switch themeSwitch = (Switch) findViewById(R.id.themetoggle);
+        TextView themeLabel = (TextView) findViewById(R.id.themetextoption);
+
+        themeLabel.setText("Use Dark Theme");
+        themeSwitch.setChecked(server_info.setTheme);
+
+
         suSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -36,12 +49,31 @@ public class Settings extends Activity {
                     //Turn on SU
                     System.out.println("Enabling SU");
                     server_info.suEnabled = true;
-                    writeSettingsFile(String.valueOf(server_info.suEnabled));
+                    writeSettingsFile(String.valueOf(server_info.suEnabled)+","+String.valueOf(server_info.setTheme));
                 } else {
                     //Turn off SU
                     System.out.println("Disabling SU");
                     server_info.suEnabled = false;
-                    writeSettingsFile(String.valueOf(server_info.suEnabled));
+                    writeSettingsFile(String.valueOf(server_info.suEnabled)+","+String.valueOf(server_info.setTheme));
+                }
+            }
+        } );
+
+        themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    //Turn on Dark Theme
+                    System.out.println("Switching to Dark Theme");
+                    server_info.setTheme = true;
+                    writeSettingsFile(String.valueOf(server_info.suEnabled)+","+String.valueOf(server_info.setTheme));
+                    server_info.scheduledRestart = true;
+                } else {
+                    //Turn on Light Theme
+                    System.out.println("Switching to Light Theme");
+                    server_info.setTheme = false;
+                    writeSettingsFile(String.valueOf(server_info.suEnabled)+","+String.valueOf(server_info.setTheme));
+                    server_info.scheduledRestart = true;
                 }
             }
         } );

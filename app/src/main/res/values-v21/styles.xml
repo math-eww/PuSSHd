@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material">
+    <style name="AppThemeLight" parent="android:Theme.Material">
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/primary</item>
@@ -13,5 +13,19 @@
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
         <item name="android:textColorTertiary">@color/textColorTertiary</item>
         <item name="android:editTextColor">@color/textColorTertiary</item>
+    </style>
+    <style name="AppThemeDark" parent="android:Theme.Material">
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@color/darkprimary</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@color/darkprimary_dark</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">@color/darkaccent</item>
+        <item name="android:windowBackground">@color/darkwindowBackground</item>
+        <item name="android:navigationBarColor">@color/darknavigationBarColor</item>
+        <item name="android:textColorSecondary">@color/darktextColorSecondary</item>
+        <item name="android:textColorTertiary">@color/darktextColorTertiary</item>
+        <item name="android:editTextColor">@color/darktextColorTertiary</item>
     </style>
 </resources>

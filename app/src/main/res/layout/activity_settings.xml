@@ -20,7 +20,7 @@ android:layout_height="fill_parent">
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:id="@+id/sutoggle"
-                    android:layout_weight="0.25"
+                    android:layout_weight="0.35"
                     android:layout_margin="5dp" />
 
                 <TextView
@@ -29,7 +29,31 @@ android:layout_height="fill_parent">
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Medium Text"
                     android:id="@+id/sutextoption"
-                    android:layout_weight="0.75"
+                    android:layout_weight="0.65"
+                    android:layout_margin="5dp"
+                    android:gravity="center_horizontal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="10dp" >
+
+                <Switch
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/themetoggle"
+                    android:layout_weight="0.35"
+                    android:layout_margin="5dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/themetextoption"
+                    android:layout_weight="0.65"
                     android:layout_margin="5dp"
                     android:gravity="center_horizontal" />
             </LinearLayout>

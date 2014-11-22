@@ -8,4 +8,13 @@
     <color name="navigationBarColor">#3F51B5</color>
     <color name="textColorSecondary">#000000</color>
     <color name="textColorTertiary">#54000000</color>
+    <!-- start dark colors -->
+    <color name="darkprimary">#424242</color>
+    <color name="darkprimary_dark">#212121</color>
+    <color name="darktextColorPrimary">#FFFFFF</color>
+    <color name="darkwindowBackground">#616161</color>
+    <color name="darkaccent">#FF4081</color>
+    <color name="darknavigationBarColor">#60424242</color>
+    <color name="darktextColorSecondary">#E0E0E0</color>
+    <color name="darktextColorTertiary">#BDBDBD</color>
 </resources>

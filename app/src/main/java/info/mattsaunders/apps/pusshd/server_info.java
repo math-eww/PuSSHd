@@ -70,14 +70,33 @@ public class server_info extends Activity {
     public static Handler mHandler = new Handler();
     public static Runnable mUpdater;
     public static boolean statusOnOff;
-    public static boolean suEnabled = Boolean.valueOf(readSettingsFile());
+    public static String[] userSettings = readSettingsFile().split(",");
+    public static boolean suEnabled = Boolean.valueOf(userSettings[0]);
+    public static boolean setTheme;
+    public static boolean scheduledRestart = false;
 
     public static Context getAppContext(){
         return server_info.context;
     }
+    public static boolean getAppTheme() {
+        userSettings = readSettingsFile().split(",");
+        if (userSettings.length > 1) {
+            setTheme = Boolean.valueOf(userSettings[1]);
+        } else {
+            setTheme = false;
+        }
+        System.out.println("Use dark theme: " + setTheme);
+        return setTheme;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (getAppTheme()) {
+            this.setTheme(R.style.AppThemeDark);
+        } else {
+            this.setTheme(R.style.AppThemeLight);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_info);
 
@@ -92,6 +111,18 @@ public class server_info extends Activity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(scheduledRestart)
+        {
+            scheduledRestart = false;
+            Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
     }
 
 
@@ -113,11 +144,6 @@ public class server_info extends Activity {
         if (id == R.id.action_settings) {
             System.out.println("Settings selected");
             startActivity(new Intent(this, Settings.class));
-            return true;
-        }
-
-        if (id == R.id.action_colours) {
-            System.out.println("Theme selected");
             return true;
         }
 
