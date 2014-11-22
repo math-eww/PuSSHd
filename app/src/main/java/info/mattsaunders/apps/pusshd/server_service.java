@@ -107,6 +107,7 @@ public class server_service extends IntentService {
              * TODO: This works to check PID against old pid, but is PID of app not just SSHD process (even thought it launches a new service?)
              *       So we need to figure out a different way to handle when the port is blocked - maybe just relaunching the application? Is there a method to unbind?
              *       Maybe reconsider attempting to store reference to sshd object so we can stop it with it's stop method, even after application reload?
+             *       Is this even a problem anymore, after solving the orientation change bug? I'm not so sure it still happens.  All this code could probably be removed.
             **/
             //Check the PID of the process blocking the port against the stored PID from the last launch of SSHD
             if (server_info.suEnabled) {
