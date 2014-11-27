@@ -31,6 +31,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v13:21.0.0'
+    compile 'com.android.support:cardview-v7:21.0.2'
+    compile 'com.android.support:recyclerview-v7:21.0.2'
     compile files('libs/mina-core-2.0.7.jar')
     compile files('libs/slf4j-api-1.6.4.jar')
     compile files('libs/slf4j-jdk14-1.6.4.jar')

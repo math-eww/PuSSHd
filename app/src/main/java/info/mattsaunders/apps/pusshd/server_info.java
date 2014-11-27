@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -173,7 +172,7 @@ public class server_info extends Activity {
             // Show 2 total pages.
             return 2;
         }
-
+        /*
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
@@ -185,6 +184,7 @@ public class server_info extends Activity {
             }
             return null;
         }
+        */
     }
 
     public static class ServerControls extends Fragment {
@@ -258,6 +258,12 @@ public class server_info extends Activity {
         //Set button label:
         final ToggleButton serverToggle = (ToggleButton)v.findViewById(R.id.serverToggle);
         serverToggle.setText("Start Server");
+
+        if (statusOnOff) {
+            //isChecked = true;
+            serverToggle.setChecked(true);
+            serverToggle.setText("Stop Server");
+        }
 
         //Set text labels:
         final TextView username1 = (TextView) v.findViewById(R.id.username1);

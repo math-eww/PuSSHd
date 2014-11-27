@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="settings_icon" format="reference"/>
+
     <style name="AppThemeLight" parent="android:Theme.Material">
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
@@ -13,6 +15,10 @@
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
         <item name="android:textColorTertiary">@color/textColorTertiary</item>
         <item name="android:editTextColor">@color/textColorTertiary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:actionMenuTextColor">@color/textColorSecondary</item>
+        <!-- icons  -->
+        <item name="settings_icon">@drawable/ic_action_settingsdark</item>
     </style>
     <style name="AppThemeDark" parent="android:Theme.Material">
         <!-- Main theme colors -->
@@ -27,5 +33,9 @@
         <item name="android:textColorSecondary">@color/darktextColorSecondary</item>
         <item name="android:textColorTertiary">@color/darktextColorTertiary</item>
         <item name="android:editTextColor">@color/darktextColorTertiary</item>
+        <item name="android:colorBackground">@color/darkcolorBackground</item>
+        <item name="android:actionMenuTextColor">@color/darktextColorSecondary</item>
+        <!-- icons  -->
+        <item name="settings_icon">@drawable/ic_action_settingsdark</item>
     </style>
 </resources>

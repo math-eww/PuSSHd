@@ -81,14 +81,16 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="support-annotations-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="slf4j-jdk14-1.6.4" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.6.4" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="sshd-core-0.13.0" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-21.0.2" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="bcprov-jdk15on-1.51" level="project" />
     <orderEntry type="library" exported="" name="bcpg-jdk15on-1.51" level="project" />
     <orderEntry type="library" exported="" name="mina-core-2.0.7" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-21.0.2" level="project" />
+    <orderEntry type="library" exported="" name="cardview-v7-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="support-v13-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="bcpkix-jdk15on-1.51" level="project" />
   </component>
