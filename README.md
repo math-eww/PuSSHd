@@ -8,7 +8,7 @@ Clean, open source Android SSH / SFTP server
 
 ### Project Status ###
 
-Unfortunately, due to life events, I haven't been able to update PuSSHd much recently. So I've decided to open source the entire project in hopes that others will be able to help contribute
+I haven't looked at this in years now. I've decided to open source the entire project in hopes that others will be able to help contribute or find something useful in my work.
 
 ### Contribution guidelines ###
 
