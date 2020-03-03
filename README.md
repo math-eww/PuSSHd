@@ -6,15 +6,14 @@ Simple SSH server for android using Apache Mina SSHD
 
 Clean, open source Android SSH / SFTP server
 
-### How do I get set up? ###
+### Project Status ###
 
-Built in Android Studio
+Unfortunately, due to life events, I haven't been able to update PuSSHd much recently. So I've decided to open source the entire project in hopes that others will be able to help contribute
 
 ### Contribution guidelines ###
 
-Suggestions welcome, get in touch
-Ask if you'd like to fork
+Make a pull request!
 
-### Who do I talk to? ###
+### License ###
 
-Repo owner
+The software is licensed under the GPL license. See the LICENSE file for full copyright and license text. Any modifications to or software including GPL-licensed code must also be made available under the GPL.
